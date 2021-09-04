@@ -1,8 +1,0 @@
-{
-  "parent": "item/generated",
-  "textures": {
-    "__comment": "Default",
-    "layer0": "shock_hookshot:item/hookshot"
-  }
-
-}

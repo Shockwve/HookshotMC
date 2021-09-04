@@ -2,6 +2,8 @@ package com.shock_hookshot.hookshot;
 
 import com.shock_hookshot.util.LIB_REF;
 import com.shock_hookshot.util.Registration;
+import com.shock_hookshot.util.ShockSoundEvents;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.common.MinecraftForge;
@@ -38,6 +40,8 @@ public class ShockMod
         ibus.addListener(this::enqueueIMC);
         // Register the processIMC method for modloading
         ibus.addListener(this::processIMC);
+
+        //ibus.addGenericListener(SoundEvents.class, ShockSoundEvents::registerSounds);
 
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);

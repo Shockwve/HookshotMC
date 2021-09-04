@@ -26,10 +26,10 @@ import net.minecraft.world.phys.Vec3;
 
 import static net.minecraft.world.entity.EntityType.*;
 
-public class Hookshot extends ThrowableItemProjectile {
+public class HookshotEntity extends ThrowableItemProjectile {
 
     private final float TICK_RATE = 20;
-    private final float speed = 10.0f * TICK_RATE;
+    private final float speed = 1.0f * TICK_RATE; // the higher the float, the slower the travel
 
     private double x_distance = 0.0f;
     private double y_distance = 0.0f;
@@ -38,19 +38,22 @@ public class Hookshot extends ThrowableItemProjectile {
     private boolean isStuckInBlock = false;
     private boolean playerIsNear = false;
 
-    public Hookshot(EntityType<? extends ThrowableItemProjectile> p_37442_, Level p_37443_) {
+    private final int lifeSpan = 40; // 3 second life span
+    private int currentLife = 0;
+
+    public HookshotEntity(EntityType<? extends ThrowableItemProjectile> p_37442_, Level p_37443_) {
         super(p_37442_, p_37443_);
     }
 
-    public Hookshot(EntityType<? extends ThrowableItemProjectile> p_37432_, double p_37433_, double p_37434_, double p_37435_, Level p_37436_) {
+    public HookshotEntity(EntityType<? extends ThrowableItemProjectile> p_37432_, double p_37433_, double p_37434_, double p_37435_, Level p_37436_) {
         super(p_37432_, p_37433_, p_37434_, p_37435_, p_37436_);
     }
 
-    public Hookshot(EntityType<? extends ThrowableItemProjectile> p_37438_, LivingEntity p_37439_, Level p_37440_) {
+    public HookshotEntity(EntityType<? extends ThrowableItemProjectile> p_37438_, LivingEntity p_37439_, Level p_37440_) {
         super(p_37438_, p_37439_, p_37440_);
     }
 
-    public Hookshot(Level p_37399_, LivingEntity p_37400_){
+    public HookshotEntity(Level p_37399_, LivingEntity p_37400_){
         super(EntityType.SNOWBALL, p_37400_, p_37399_);
         this.setNoGravity(true);
     }
@@ -63,6 +66,15 @@ public class Hookshot extends ThrowableItemProjectile {
     @Override
     public void tick(){
         super.tick();
+
+        if (!isStuckInBlock){
+            currentLife++;
+        }
+
+        if (!isStuckInBlock && currentLife >= lifeSpan){
+            this.discard();
+        }
+
         Entity owner = this.getOwner();
 
         Vec3 hookPos = this.position();
@@ -74,12 +86,9 @@ public class Hookshot extends ThrowableItemProjectile {
                 ServerPlayer serverplayer = (ServerPlayer)owner;
                 if (serverplayer.connection.getConnection().isConnected() && serverplayer.level == this.level && !serverplayer.isSleeping()) { // Check the player isn't lagging, they are on the correct level (overworld/nether/end), afk????
 
-                    double x_ = playerPos.x + (x_distance / speed);
-                    double y_ = playerPos.y + (y_distance / speed);
-                    double z_ = playerPos.z + (z_distance / speed);
-
-                    System.out.println("Hookshot pos: " + hookPos.x + ", " + hookPos.y + ", " + hookPos.z);
-                    System.out.println("playerPos pos: " + playerPos.x + ", " + playerPos.y + ", " + playerPos.z);
+                    double x_ = (x_distance / speed);
+                    double y_ = (y_distance / speed);
+                    double z_ = (z_distance / speed);
 
                     serverplayer.moveTo(playerPos.x + x_, playerPos.y + y_, playerPos.z + z_);
                 }
@@ -104,17 +113,13 @@ public class Hookshot extends ThrowableItemProjectile {
     protected void onHitBlock(BlockHitResult blockHitResult){
         super.onHitBlock(blockHitResult);
 
-
         isStuckInBlock = true;
         this.setDeltaMovement(0.0, 0.0, 0.0); //Stop all movement
-        BlockPos blockPos = blockHitResult.getBlockPos();
 
         Vec3 hookPos = this.position();
         Vec3 playerPos = this.getOwner().position();
 
         x_distance = Math.abs(hookPos.x) - Math.abs(playerPos.x);
-        System.out.println("Doing (" + Math.abs(hookPos.x) + " - " + Math.abs(playerPos.x));
-        System.out.println("Result is " + (Math.abs(hookPos.x) - Math.abs(playerPos.x) / speed));
         y_distance = Math.abs(hookPos.y) - Math.abs(playerPos.y);
         z_distance = Math.abs(hookPos.z) - Math.abs(playerPos.z);
     }

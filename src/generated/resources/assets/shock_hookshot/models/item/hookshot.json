@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/handheld",
   "textures": {
-    "texture": "shock_hookshot:item/hookshot"
+    "layer0": "shock_hookshot:item/hookshot"
   }
 }

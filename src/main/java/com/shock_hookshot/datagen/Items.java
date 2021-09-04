@@ -18,6 +18,7 @@ public class Items extends ItemModelProvider {
         singleTexture(
                 Registration.HOOKSHOTITEM.get().getRegistryName().getPath(),
                 new ResourceLocation("item/handheld"),
-                new ResourceLocation(LIB_REF.MODID, "item/hookshot.json"));
+                "layer0",
+                new ResourceLocation(LIB_REF.MODID, "item/hookshot"));
     }
 }
