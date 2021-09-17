@@ -27,7 +27,8 @@ public class HookshotItem extends Item {
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand interactionHand){
 
         ItemStack handItem = player.getItemInHand(interactionHand);
-        level.playSound((Player)null, player.getX(), player.getY(), player.getZ(), ShockSoundEvents.HOOKSHOT_FIRE, SoundSource.NEUTRAL, 0.5F, 0.4F / (level.getRandom().nextFloat() * 0.4F + 0.8F));
+        //params as follows: x, y, z, SoundEvent to play, SoundSource, volume, pitch
+        level.playSound((Player)null, player.getX(), player.getY(), player.getZ(), ShockSoundEvents.HOOKSHOT_FIRE, SoundSource.NEUTRAL, 1.0F, 1.0F);
         if (!level.isClientSide) {
             HookshotEntity hookshotEntity = new HookshotEntity(level, player);
             hookshotEntity.setItem(handItem);

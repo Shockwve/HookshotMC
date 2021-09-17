@@ -12,11 +12,6 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 public class Registration {
 
-    @SubscribeEvent
-    public static void registerSounds(RegistryEvent.Register<SoundEvent> sounds) {
-        ShockSoundEvents.init(sounds.getRegistry());
-    }
-
     private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, LIB_REF.MODID);
 
     public static void init(){

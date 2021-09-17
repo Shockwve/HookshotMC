@@ -41,18 +41,6 @@ public class HookshotEntity extends ThrowableItemProjectile {
     private final int lifeSpan = 40; // 3 second life span
     private int currentLife = 0;
 
-    public HookshotEntity(EntityType<? extends ThrowableItemProjectile> p_37442_, Level p_37443_) {
-        super(p_37442_, p_37443_);
-    }
-
-    public HookshotEntity(EntityType<? extends ThrowableItemProjectile> p_37432_, double p_37433_, double p_37434_, double p_37435_, Level p_37436_) {
-        super(p_37432_, p_37433_, p_37434_, p_37435_, p_37436_);
-    }
-
-    public HookshotEntity(EntityType<? extends ThrowableItemProjectile> p_37438_, LivingEntity p_37439_, Level p_37440_) {
-        super(p_37438_, p_37439_, p_37440_);
-    }
-
     public HookshotEntity(Level p_37399_, LivingEntity p_37400_){
         super(EntityType.SNOWBALL, p_37400_, p_37399_);
         this.setNoGravity(true);
@@ -90,6 +78,9 @@ public class HookshotEntity extends ThrowableItemProjectile {
                     double y_ = (y_distance / speed);
                     double z_ = (z_distance / speed);
 
+                    //System.out.println(String.format("Player pos: %s, %s, %s", playerPos.x, playerPos.y, playerPos.z));
+                    //System.out.println(String.format("Moving by: %s, %s, %s", x_, y_, z_));
+                    //System.out.println(String.format("Moving player to: %s, %s, %s", playerPos.x + x_, playerPos.y + y_, playerPos.z + z_));
                     serverplayer.moveTo(playerPos.x + x_, playerPos.y + y_, playerPos.z + z_);
                 }
             }
