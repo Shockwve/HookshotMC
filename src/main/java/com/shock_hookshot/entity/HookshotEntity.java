@@ -1,30 +1,19 @@
 package com.shock_hookshot.entity;
 
+import com.shock_hookshot.items.HookshotItem;
 import com.shock_hookshot.util.MathHelper;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleTypes;
+import com.shock_hookshot.util.ShockSoundEvents;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.monster.Endermite;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.ProjectileUtil;
-import net.minecraft.world.entity.projectile.Snowball;
 import net.minecraft.world.entity.projectile.ThrowableItemProjectile;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.TheEndGatewayBlockEntity;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-
-import static net.minecraft.world.entity.EntityType.*;
 
 public class HookshotEntity extends ThrowableItemProjectile {
 
@@ -34,15 +23,20 @@ public class HookshotEntity extends ThrowableItemProjectile {
     private double x_distance = 0.0f;
     private double y_distance = 0.0f;
     private double z_distance = 0.0f;
+    private float travelDistance = 0.25f;
 
     private boolean isStuckInBlock = false;
     private boolean playerIsNear = false;
 
-    private final int lifeSpan = 40; // 3 second life span
+    private final int lifeSpan = 20; // 3 second life span
     private int currentLife = 0;
 
-    public HookshotEntity(Level p_37399_, LivingEntity p_37400_){
-        super(EntityType.SNOWBALL, p_37400_, p_37399_);
+    private HookshotItem parentItem;
+    private Level level;
+
+    public HookshotEntity(Level level, LivingEntity entity){
+        super(EntityType.SNOWBALL, entity, level);
+        this.level = level;
         this.setNoGravity(true);
     }
 
@@ -60,7 +54,7 @@ public class HookshotEntity extends ThrowableItemProjectile {
         }
 
         if (!isStuckInBlock && currentLife >= lifeSpan){
-            this.discard();
+            killEntity();
         }
 
         Entity owner = this.getOwner();
@@ -69,19 +63,20 @@ public class HookshotEntity extends ThrowableItemProjectile {
         Vec3 playerPos = owner.position();
         float distance = (float)MathHelper.getDistance(hookPos, playerPos);
 
+        if(distance >= 15.0f){
+            killEntity();
+        }
+
         if(isStuckInBlock){
             if (owner instanceof ServerPlayer) {
                 ServerPlayer serverplayer = (ServerPlayer)owner;
-                if (serverplayer.connection.getConnection().isConnected() && serverplayer.level == this.level && !serverplayer.isSleeping()) { // Check the player isn't lagging, they are on the correct level (overworld/nether/end), afk????
+                if (serverplayer.connection.getConnection().isConnected() && serverplayer.level == this.level && !serverplayer.isSleeping()) { // Check the player isn't lagging, they are on the correct level (overworld/nether/end), isn't in a bed
 
                     double x_ = (x_distance / speed);
                     double y_ = (y_distance / speed);
                     double z_ = (z_distance / speed);
 
-                    //System.out.println(String.format("Player pos: %s, %s, %s", playerPos.x, playerPos.y, playerPos.z));
-                    //System.out.println(String.format("Moving by: %s, %s, %s", x_, y_, z_));
-                    //System.out.println(String.format("Moving player to: %s, %s, %s", playerPos.x + x_, playerPos.y + y_, playerPos.z + z_));
-                    serverplayer.moveTo(playerPos.x + x_, playerPos.y + y_, playerPos.z + z_);
+                    serverplayer.moveTo(playerPos.x - x_, playerPos.y - y_, playerPos.z - z_);
                 }
             }
         }
@@ -90,14 +85,9 @@ public class HookshotEntity extends ThrowableItemProjectile {
             playerIsNear = true;
         }
 
-        if(isStuckInBlock && playerIsNear){
-            this.discard();
+        if(isStuckInBlock && playerIsNear) {
+            killEntity();
         }
-
-        if (this.getOwner() == null){
-            this.discard();
-        }
-
     }
 
     @Override
@@ -110,8 +100,30 @@ public class HookshotEntity extends ThrowableItemProjectile {
         Vec3 hookPos = this.position();
         Vec3 playerPos = this.getOwner().position();
 
-        x_distance = Math.abs(hookPos.x) - Math.abs(playerPos.x);
-        y_distance = Math.abs(hookPos.y) - Math.abs(playerPos.y);
-        z_distance = Math.abs(hookPos.z) - Math.abs(playerPos.z);
+        x_distance = (Math.abs(playerPos.x) - Math.abs(hookPos.x));
+        y_distance = (Math.abs(playerPos.y) - Math.abs(hookPos.y));
+        z_distance = (Math.abs(playerPos.z) - Math.abs(hookPos.z));
+
+        this.level.playSound((Player)this.getOwner(), playerPos.x, playerPos.y, playerPos.z, ShockSoundEvents.HOOKSHOT_TARGET, SoundSource.NEUTRAL, 1.0F, 1.0F);
+    }
+
+    public void setParentItem(HookshotItem parentItem){
+        this.parentItem = parentItem;
+    }
+
+    protected void killEntity(){
+        this.discard();
+
+        parentItem.removeChild();
+
+        if (parentItem != null) {
+            ((Player) this.getOwner()).getCooldowns().removeCooldown(parentItem);
+        }
+    }
+
+    protected double getTravelDistance(double point1, double point2){
+        int sign = point1 - point2 >= 0.0f ? 1 : -1;
+
+        return Math.abs(point1 - point2) > travelDistance ? sign * travelDistance : point1 - point2;
     }
 }
