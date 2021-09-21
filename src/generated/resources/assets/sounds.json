@@ -1,0 +1,16 @@
+{
+  "hookshot_fire": {
+    "category": "neutral",
+    "sounds": [
+      "shock_hookshot:hookshot_fire"
+    ],
+    "subtitle": "subtitle.shock_hookshot.fire"
+  },
+  "hookshot_target": {
+    "category": "neutral",
+    "sounds": [
+      "shock_hookshot:hookshot_target"
+    ],
+    "subtitle": "subtitle.shock_hookshot.target"
+  }
+}
