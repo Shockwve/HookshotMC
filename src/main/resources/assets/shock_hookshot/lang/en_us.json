@@ -1,5 +1,7 @@
 {
   "item.shock_hookshot.hookshot": "Hookshot",
+  "block.shock_hookshot.hookshot_column": "Column",
+  "block.shock_hookshot.hookshot_target": "Target",
   "subtitle.shock_hookshot.fire": "Hookshot Fired",
   "subtitle.shock_hookshot.target": "Hookshot Latched"
 }

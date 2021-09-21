@@ -20,5 +20,8 @@ public class Items extends ItemModelProvider {
                 new ResourceLocation("item/handheld"),
                 "layer0",
                 new ResourceLocation(LIB_REF.MODID, "item/hookshot"));
+
+        withExistingParent(Registration.HOOKSHOTCOLUMNBLOCK.get().getRegistryName().getPath(), new ResourceLocation(LIB_REF.MODID, "block/hookshot_column"));
+        withExistingParent(Registration.HOOKSHOTTARGETBLOCK.get().getRegistryName().getPath(), new ResourceLocation(LIB_REF.MODID, "block/hookshot_target"));
     }
 }

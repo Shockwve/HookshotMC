@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "shock_hookshot:block/hookshot_target"
+  }
+}
